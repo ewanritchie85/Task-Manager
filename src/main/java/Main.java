@@ -12,23 +12,28 @@ public class Main {
         while (choice != 3) {
             switch (choice) {
                 case 1:
-                    // Show events list
                     util.showEventsList(events);
-                    break;   
-                case 2: 
-                    // Add new event
+                    break;
+                case 2:
                     Event event = new Event();
                     event.addEvent(input);
                     event.addReminder(input);
+                    // change this to add to a file for persistence
                     events.add(event);
-                    break;  
-                default:  
+                    break;
+                default:
                     System.out.println("Invalid choice. Please try again.");
-                    break; 
-                    
+                    break;
+
             }
-            choice = util.getChoice(input);
-        
+            if (util.chooseAgain(input)) {
+                choice = util.getChoice(input);
+            } else {
+                util.showEventsList(events);
+                System.out.println("Exiting...");
+                break;
+            }
+
         }
         input.close();
     }
