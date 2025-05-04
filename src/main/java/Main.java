@@ -19,6 +19,7 @@ public class Main {
                     event.addEvent(input);
                     event.addReminder(input);
                     // change this to add to a file for persistence
+                    util.writeToCSV(event);
                     events.add(event);
                     break;
                 default:
