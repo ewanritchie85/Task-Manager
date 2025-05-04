@@ -12,48 +12,56 @@ public class Event {
     }
 
     public void addEvent(Scanner input) {
+        while (true) {
+            System.out.println("Enter event name:");
+            String nameInput = input.nextLine();
+            System.out.println("Enter event date and time (YYYY/MM/DD hh:mm):");
+            String dateInput = input.nextLine();
 
-        System.out.println("Enter event name:");
-        String nameInput = input.nextLine();
-        System.out.println("Enter event date and time(YYYY/MM/DD hh:mm):");
-        String dateInput = input.nextLine();
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+                dateTime = LocalDateTime.parse(dateInput, formatter);
 
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-            dateTime = LocalDateTime.parse(dateInput, formatter);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        System.out.println(nameInput + " on " + dateInput);
-        System.out.println("Is this correct? (y/n)");
-        char confirm = input.nextLine().charAt(0);
-        if (confirm == 'y' || confirm == 'Y') {
-            this.name = nameInput;
-            this.date = dateTime;
-            System.out.println("Event added: " + this.name + " on " + this.date);
-        } else {
-            System.out.println("Event not added.");
+                System.out.println(nameInput + " on " + dateInput);
+                System.out.println("Is this correct? (y/n)");
+                char confirm = input.nextLine().charAt(0);
+                if (confirm == 'y' || confirm == 'Y') {
+                    this.name = nameInput;
+                    this.date = dateTime;
+                    System.out.println("Event added: " + this.name + " on " + this.date);
+                    break;
+                } else {
+                    System.out.println("Event not added. Please try again.");
+                }
+
+            } catch (Exception e) {
+                System.out.println("Invalid date format. Please try again.");
+            }
         }
     }
 
     public void addReminder(Scanner input) {
-        System.out.println("Enter reminder date and time (YYYY/MM/DD hh:mm):");
-        String reminderDateInput = input.nextLine();
-        try {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-            dateTime = LocalDateTime.parse(reminderDateInput, formatter);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        while (true) {
+            System.out.println("Enter reminder date and time (YYYY/MM/DD hh:mm):");
+            String reminderDateInput = input.nextLine();
 
-        System.out.println("Reminder date: " + reminderDateInput);
-        System.out.println("Is this correct? (y/n)");
-        char confirm = input.nextLine().charAt(0);
-        if (confirm == 'y' || confirm == 'Y') {
-            this.reminderDate = dateTime;
-            System.out.println("Reminder added successfully!");
-        } else {
-            System.out.println("Reminder not added.");
+            try {
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
+                dateTime = LocalDateTime.parse(reminderDateInput, formatter);
+
+                System.out.println("Reminder date: " + reminderDateInput);
+                System.out.println("Is this correct? (y/n)");
+                char confirm = input.nextLine().charAt(0);
+                if (confirm == 'y' || confirm == 'Y') {
+                    this.reminderDate = dateTime;
+                    System.out.println("Reminder added successfully!");
+                    break;
+                } else {
+                    System.out.println("Reminder not added. Please try again.");
+                }
+            } catch (Exception e) {
+                System.out.println("Invalid date format. Please try again.");
+            }
         }
     }
 
