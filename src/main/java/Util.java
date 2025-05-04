@@ -1,8 +1,11 @@
 import java.util.Scanner;
 import java.util.List;
+
+import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.FileReader;
 
 public class Util {
     String CSVFile = "events.csv";
@@ -33,7 +36,7 @@ public class Util {
     }
 
     public Boolean chooseAgain(Scanner input) {
-        System.out.println("Do you want to add another event? (y/n)");
+        System.out.println("Do you want to do anything else? (y/n)");
         char choice = input.nextLine().charAt(0);
         if (choice == 'y' || choice == 'Y') {
             return true;
@@ -42,10 +45,11 @@ public class Util {
     }
 
     public void writeToCSV(Event event) {
+        // String CSVFile = "events.csv";
+        java.io.File file = new java.io.File(CSVFile);
+        boolean fileExists = file.exists();
 
-        boolean fileExists = new java.io.File(CSVFile).exists();
-
-        try (CSVWriter writer = new CSVWriter(new FileWriter(CSVFile, true))) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(file, true))) {
             if (!fileExists) {
                 String[] header = { "Event Name", "Event Date", "Reminder Date" };
                 writer.writeNext(header);
@@ -63,7 +67,18 @@ public class Util {
     }
 
     public void readFromCSV() {
-        // Implement reading from CSV if needed
-    }
+        try (CSVReader reader = new CSVReader(new FileReader(CSVFile))) {
+            List<String[]> events = reader.readAll();
 
+            // print Data
+            for (String[] event : events) {
+                for (String cell : event) {
+                    System.out.print(cell + "\t");
+                }
+                System.out.println();
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from CSV: " + e.getMessage());
+        }
+    }
 }

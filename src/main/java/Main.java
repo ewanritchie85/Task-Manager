@@ -12,7 +12,8 @@ public class Main {
         while (choice != 3) {
             switch (choice) {
                 case 1:
-                    util.showEventsList(events);
+                    // util.showEventsList(events);
+                    util.readFromCSV();
                     break;
                 case 2:
                     Event event = new Event();
