@@ -66,19 +66,23 @@ public class Util {
         }
     }
 
-    public void readFromCSV() {
+    public List<String[]> readFromCSV() {
         try (CSVReader reader = new CSVReader(new FileReader(CSVFile))) {
-            List<String[]> events = reader.readAll();
-
-            // print Data
-            for (String[] event : events) {
-                for (String cell : event) {
-                    System.out.print(cell + "\t");
-                }
-                System.out.println();
-            }
+            return reader.readAll();
         } catch (IOException e) {
             System.err.println("Error reading from CSV: " + e.getMessage());
+            return new java.util.ArrayList<>();
         }
+    }
+
+    public void printFromCSV() {
+        List<String[]> events = readFromCSV();
+        for (String[] event : events) {
+            for (String cell : event) {
+                System.out.print(cell + "\t");
+            }
+            System.out.println();
+        }
+
     }
 }
