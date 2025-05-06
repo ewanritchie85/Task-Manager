@@ -1,8 +1,10 @@
 import java.util.Scanner;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 public class Event {
+    Util util = new Util();
     private String name;
     private LocalDateTime date;
     private LocalDateTime reminderDate;
@@ -54,7 +56,7 @@ public class Event {
                 char confirm = input.nextLine().charAt(0);
                 if (confirm == 'y' || confirm == 'Y') {
                     this.reminderDate = dateTime;
-                    System.out.println("Reminder added successfully!");
+                    System.out.println("Reminder added");
                     break;
                 } else {
                     System.out.println("Reminder not added. Please try again.");
@@ -75,6 +77,21 @@ public class Event {
 
     public LocalDateTime getReminderDate() {
         return this.reminderDate;
+    }
+
+    public void removeEvent(String eventToRemove) {
+        List<String[]> events = util.readFromCSV();
+        List<String[]> updatedEvents = new java.util.ArrayList<>();
+    
+        for (String[] event : events) {
+            if (!event[0].equals(eventToRemove)) {
+                updatedEvents.add(event);
+            } else {
+                System.out.println("Event removed: " + eventToRemove);
+            }
+        }
+    
+        util.overwriteCSV(updatedEvents);
     }
 
 }

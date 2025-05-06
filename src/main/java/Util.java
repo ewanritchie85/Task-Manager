@@ -13,18 +13,6 @@ public class Util {
     public Util() {
     }
 
-    public void showEventsList(List<Event> events) {
-        if (events.isEmpty()) {
-            System.out.println("No events scheduled.");
-        } else {
-            System.out.println("Events list:");
-            for (Event e : events) {
-                System.out.println("- " + e.getDate() + " : " + e.getName());
-
-            }
-        }
-    }
-
     public int getChoice(Scanner input) {
         System.out.println("Please choose an option:");
         System.out.println("1. Show events list");
@@ -45,7 +33,6 @@ public class Util {
     }
 
     public void writeToCSV(Event event) {
-        // String CSVFile = "events.csv";
         java.io.File file = new java.io.File(CSVFile);
         boolean fileExists = file.exists();
 
@@ -84,5 +71,17 @@ public class Util {
             System.out.println();
         }
 
+    }
+    public void overwriteCSV(List<String[]> events) {
+        try (CSVWriter writer = new CSVWriter(new FileWriter(CSVFile))) {
+            String[] header = { "Event Name", "Event Date", "Reminder Date" };
+            writer.writeNext(header);
+    
+            for (String[] event : events) {
+                writer.writeNext(event);
+            }
+        } catch (IOException e) {
+            System.err.println("Error overwriting CSV: " + e.getMessage());
+        }
     }
 }

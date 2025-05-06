@@ -26,7 +26,7 @@ public class Main {
                 choice = util.getChoice(input);
             } else {
                 util.printFromCSV();
-                System.out.println("Exiting...");
+                System.out.println("Goodbye...");
                 break;
             }
 
