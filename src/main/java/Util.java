@@ -17,7 +17,6 @@ public class Util {
         System.out.println("Please choose an option:");
         System.out.println("1. Show events list");
         System.out.println("2. Add new event");
-
         System.out.println("3. Delete event");
         System.out.println("4. Exit");
         int choice = input.nextInt();
@@ -26,20 +25,30 @@ public class Util {
     }
 
     public Boolean chooseAgain(Scanner input) {
-        System.out.println("Do you want to do anything else? (y/n)");
-        char choice = input.nextLine().charAt(0);
-        if (choice == 'y' || choice == 'Y') {
-            return true;
+        while (true){
+        try{
+            System.out.println("Do you want to do anything else? (y/n)");
+            char choice = input.nextLine().charAt(0);
+            if (choice == 'y' || choice == 'Y') {
+                return true;
+            } else if (choice == 'n' || choice == 'N') {
+                return false;
+            }
+            else {
+                System.out.println("Invalid input. Please enter 'y' or 'n'.");
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid input. Please enter 'y' or 'n'.");
         }
-        return false;
+    }
     }
 
     public void writeToCSV(Event event) {
         java.io.File file = new java.io.File(CSVFile);
-        boolean fileExists = file.exists();
+        boolean hasHeader = file.exists() && file.length() > 0;
 
         try (CSVWriter writer = new CSVWriter(new FileWriter(file, true))) {
-            if (!fileExists) {
+            if (!hasHeader) {
                 String[] header = { "Event Name", "Event Date", "Reminder Date" };
                 writer.writeNext(header);
             }

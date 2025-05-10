@@ -16,7 +16,7 @@ public class Event {
     public void addEvent(Scanner input) {
         while (true) {
             System.out.println("Enter event name:");
-            String nameInput = input.nextLine();
+            String nameInput = input.nextLine().trim();
             System.out.println("Enter event date and time (YYYY/MM/DD hh:mm):");
             String dateInput = input.nextLine();
 
@@ -55,9 +55,13 @@ public class Event {
                 System.out.println("Is this correct? (y/n)");
                 char confirm = input.nextLine().charAt(0);
                 if (confirm == 'y' || confirm == 'Y') {
-                    this.reminderDate = dateTime;
-                    System.out.println("Reminder added");
-                    break;
+                    if (this.date != null && dateTime.isBefore(this.date) && dateTime.isAfter(LocalDateTime.now())) {
+                        this.reminderDate = dateTime;
+                        System.out.println("Reminder added");
+                        break;
+                    } else {
+                        System.out.println("Reminder must be before the event date. Please try again.");
+                    }
                 } else {
                     System.out.println("Reminder not added. Please try again.");
                 }
@@ -81,10 +85,10 @@ public class Event {
 
     public void removeEvent(Scanner input) {
         System.out.println("Enter name of event to remove:");
-            String eventToRemove = input.nextLine();
+        String eventToRemove = input.nextLine();
         List<String[]> events = util.readFromCSV();
         List<String[]> updatedEvents = new java.util.ArrayList<>();
-    
+
         for (String[] event : events) {
             if (!event[0].equals(eventToRemove)) {
                 updatedEvents.add(event);
@@ -92,7 +96,7 @@ public class Event {
                 System.out.println("Event removed: " + eventToRemove);
             }
         }
-    
+
         util.overwriteCSV(updatedEvents);
     }
 
