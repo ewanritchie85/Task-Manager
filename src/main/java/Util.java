@@ -17,7 +17,9 @@ public class Util {
         System.out.println("Please choose an option:");
         System.out.println("1. Show events list");
         System.out.println("2. Add new event");
-        System.out.println("3. Exit");
+
+        System.out.println("3. Delete event");
+        System.out.println("4. Exit");
         int choice = input.nextInt();
         input.nextLine();
         return choice;
@@ -72,11 +74,12 @@ public class Util {
         }
 
     }
+
     public void overwriteCSV(List<String[]> events) {
         try (CSVWriter writer = new CSVWriter(new FileWriter(CSVFile))) {
             String[] header = { "Event Name", "Event Date", "Reminder Date" };
             writer.writeNext(header);
-    
+            // add verification etc.
             for (String[] event : events) {
                 writer.writeNext(event);
             }

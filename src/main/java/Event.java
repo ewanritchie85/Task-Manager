@@ -79,7 +79,9 @@ public class Event {
         return this.reminderDate;
     }
 
-    public void removeEvent(String eventToRemove) {
+    public void removeEvent(Scanner input) {
+        System.out.println("Enter name of event to remove:");
+            String eventToRemove = input.nextLine();
         List<String[]> events = util.readFromCSV();
         List<String[]> updatedEvents = new java.util.ArrayList<>();
     
