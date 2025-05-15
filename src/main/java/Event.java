@@ -8,20 +8,16 @@ public class Event {
     private String name;
     private LocalDateTime date;
     private LocalDateTime reminderDate;
-    private LocalDateTime dateTime;
 
     public Event() {
     }
-
-
-
 
     private String promptForEventName(Scanner input) {
         System.out.println("Enter event name:");
         return input.nextLine().trim();
     }
 
-    private LocalDateTime promptForEventDateTime(Scanner input) throws Exception {
+    private LocalDateTime promptForEventDateTime(Scanner input) {
         System.out.println("Enter event date and time (YYYY/MM/DD hh:mm):");
         String dateInput = input.nextLine();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
@@ -35,7 +31,7 @@ public class Event {
         return confirm == 'y' || confirm == 'Y';
     }
 
-        public void addEvent(Scanner input) {
+    public void addEvent(Scanner input) {
         while (true) {
             try {
                 String nameInput = promptForEventName(input);
@@ -75,12 +71,14 @@ public class Event {
                 LocalDateTime reminderDateTime = promptForReminderDateTime(input);
 
                 if (confirmReminder(reminderDateTime, input)) {
-                    if (this.date != null && reminderDateTime.isBefore(this.date) && reminderDateTime.isAfter(LocalDateTime.now())) {
+                    if (this.date != null && reminderDateTime.isBefore(this.date)
+                            && reminderDateTime.isAfter(LocalDateTime.now())) {
                         this.reminderDate = reminderDateTime;
                         System.out.println("Reminder added");
                         break;
                     } else {
-                        System.out.println("Reminder must be before the event date and after the current time. Please try again.");
+                        System.out.println(
+                                "Reminder must be before the event date and after the current time. Please try again.");
                     }
                 } else {
                     System.out.println("Reminder not added. Please try again.");

@@ -1,5 +1,6 @@
 import java.util.Scanner;
 import java.util.List;
+import java.time.LocalDateTime;
 
 import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
@@ -96,4 +97,11 @@ public class Util {
             System.err.println("Error overwriting CSV: " + e.getMessage());
         }
     }
+
+    public LocalDateTime getLocalDateTime(){
+        return LocalDateTime.now();
+    }
+
 }
+
+    

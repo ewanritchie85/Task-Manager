@@ -1,6 +1,6 @@
+import java.time.LocalDateTime;
 import org.junit.Test;
 import static org.junit.Assert.*;
-import java.time.LocalDateTime;
 
 public class EventTests {
 
@@ -53,4 +53,5 @@ public class EventTests {
 
         assertEquals(expectedReminder, event.getReminderDate());
     }
+
 }
