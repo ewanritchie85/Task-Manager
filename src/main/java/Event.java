@@ -7,7 +7,6 @@ public class Event {
     Util util = new Util();
     private String name;
     private LocalDateTime date;
-    private LocalDateTime reminderDate;
 
     public Event() {
     }
@@ -36,6 +35,10 @@ public class Event {
             try {
                 String nameInput = promptForEventName(input);
                 LocalDateTime eventDateTime = promptForEventDateTime(input);
+                if (eventDateTime.isBefore(LocalDateTime.now())) {
+                    System.out.println("Event date must be in the future. Please try again.");
+                    continue;
+                }
 
                 if (confirmEventDetails(nameInput, eventDateTime, input)) {
                     this.name = nameInput;
@@ -51,44 +54,7 @@ public class Event {
         }
     }
 
-    private LocalDateTime promptForReminderDateTime(Scanner input) throws Exception {
-        System.out.println("Enter reminder date and time (YYYY/MM/DD hh:mm):");
-        String reminderDateInput = input.nextLine();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm");
-        return LocalDateTime.parse(reminderDateInput, formatter);
-    }
-
-    private boolean confirmReminder(LocalDateTime reminderDate, Scanner input) {
-        System.out.println("Reminder date: " + reminderDate.format(DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm")));
-        System.out.println("Is this correct? (y/n)");
-        char confirm = input.nextLine().charAt(0);
-        return confirm == 'y' || confirm == 'Y';
-    }
-
-    public void addReminder(Scanner input) {
-        while (true) {
-            try {
-                LocalDateTime reminderDateTime = promptForReminderDateTime(input);
-
-                if (confirmReminder(reminderDateTime, input)) {
-                    if (this.date != null && reminderDateTime.isBefore(this.date)
-                            && reminderDateTime.isAfter(LocalDateTime.now())) {
-                        this.reminderDate = reminderDateTime;
-                        System.out.println("Reminder added");
-                        break;
-                    } else {
-                        System.out.println(
-                                "Reminder must be before the event date and after the current time. Please try again.");
-                    }
-                } else {
-                    System.out.println("Reminder not added. Please try again.");
-                }
-            } catch (Exception e) {
-                System.out.println("Invalid date format. Please try again.");
-            }
-        }
-    }
-
+    
     public String getName() {
         return this.name;
     }
@@ -97,9 +63,7 @@ public class Event {
         return this.date;
     }
 
-    public LocalDateTime getReminderDate() {
-        return this.reminderDate;
-    }
+
 
     public void removeEvent(Scanner input) {
         System.out.println("Enter name of event to remove:");

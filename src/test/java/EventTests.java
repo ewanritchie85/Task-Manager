@@ -37,21 +37,5 @@ public class EventTests {
         assertEquals(expectedDate, event.getDate());
     }
 
-    @Test
-    public void testGetReminderDateReturnsCorrectValue() {
-        Event event = new Event();
-
-        LocalDateTime expectedReminder = LocalDateTime.of(2025, 12, 10, 12, 0);
-
-        try {
-            java.lang.reflect.Field reminderField = Event.class.getDeclaredField("reminderDate");
-            reminderField.setAccessible(true);
-            reminderField.set(event, expectedReminder);
-        } catch (Exception e) {
-            fail("Reflection failed to set reminderDate field: " + e.getMessage());
-        }
-
-        assertEquals(expectedReminder, event.getReminderDate());
-    }
 
 }

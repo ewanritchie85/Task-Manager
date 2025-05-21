@@ -27,24 +27,25 @@ public class Util {
 
     public Boolean chooseAgain(Scanner input) {
         while (true){
-        try{
-            System.out.println("Do you want to do anything else? (y/n)");
-            char choice = input.nextLine().charAt(0);
-            if (choice == 'y' || choice == 'Y') {
-                return true;
-            } else if (choice == 'n' || choice == 'N') {
-                return false;
-            }
-            else {
+            try{
+                System.out.println("Do you want to do anything else? (y/n)");
+                char choice = input.nextLine().charAt(0);
+                if (choice == 'y' || choice == 'Y') {
+                    return true;
+                } else if (choice == 'n' || choice == 'N') {
+                    System.out.println("Goodbye...");
+                    return false;
+                }
+                else {
+                    System.out.println("Invalid input. Please enter 'y' or 'n'.");
+                }
+            } catch (Exception e) {
                 System.out.println("Invalid input. Please enter 'y' or 'n'.");
             }
-        } catch (Exception e) {
-            System.out.println("Invalid input. Please enter 'y' or 'n'.");
         }
     }
-    }
 
-    public void writeToCSV(Event event) {
+    public void writeToCSV(Event event, Reminder reminder) {
         java.io.File file = new java.io.File(CSVFile);
         boolean hasHeader = file.exists() && file.length() > 0;
 
@@ -57,7 +58,7 @@ public class Util {
             String[] data = {
                     event.getName(),
                     event.getDate().toString(),
-                    event.getReminderDate().toString()
+                    reminder.getReminderDate().toString()
             };
             writer.writeNext(data);
         } catch (IOException e) {
