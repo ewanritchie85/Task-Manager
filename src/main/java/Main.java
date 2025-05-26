@@ -8,6 +8,7 @@ public class Main {
         Email email = new Email();
 
         startReminderThread(email);
+        startCleanupThread(csv);
 
         int choice = util.getChoice(input);
         while (choice != 4) {
@@ -36,6 +37,19 @@ public class Main {
             }
         }).start();
     }
+
+    private static void startCleanupThread(Csv csv) {
+    new Thread(() -> {
+        while (true) {
+            try {
+                csv.removePastEvents();
+                Thread.sleep(24 * 60 * 60 * 1000); // sleep 24 hours
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }).start();
+}
 
     private static void handleUserChoice(int choice, Scanner input, Csv csv) {
         switch (choice) {
