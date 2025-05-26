@@ -74,25 +74,31 @@ public class Csv {
     }
 
     public void removePastEvents() {
-        List<String[]> events = readFromCSV();
-        List<String[]> futureEvents = new java.util.ArrayList<>();
-        // Always keep the header row
-        if (!events.isEmpty() && events.get(0).length > 0 && events.get(0)[0].equals("Event Name")) {
-            futureEvents.add(events.get(0));
-        }
+    List<String[]> events = readFromCSV();
+    List<String[]> futureEvents = new java.util.ArrayList<>();
 
-        for (int i = 1; i < events.size(); i++) {
-            String[] event = events.get(i);
-            try {
-                LocalDateTime eventDate = LocalDateTime.parse(event[1]);
-                if (eventDate.isAfter(LocalDateTime.now())) {
-                    futureEvents.add(event);
-                }
-            } catch (DateTimeParseException e) {
-                // Keep events with invalid date format, or log as needed
+    // Always keep the header row
+    if (!events.isEmpty() && events.get(0).length > 0 && events.get(0)[0].equals("Event Name")) {
+        futureEvents.add(events.get(0));
+    }
+
+    for (int i = 1; i < events.size(); i++) {
+        String[] event = events.get(i);
+        // Check for enough columns
+        if (event.length < 2) continue;
+
+        try {
+            LocalDateTime eventDate = LocalDateTime.parse(event[1]);
+            if (eventDate.isAfter(LocalDateTime.now())) {
+                futureEvents.add(event);
+            }
+        } catch (DateTimeParseException e) {
+            // Only warn if it's not the header
+            if (!event[1].equalsIgnoreCase("Event Date")) {
                 System.err.println("Skipping invalid date row: " + String.join(",", event));
             }
         }
-        overwriteCSV(futureEvents);
     }
+    overwriteCSV(futureEvents);
+}
 }

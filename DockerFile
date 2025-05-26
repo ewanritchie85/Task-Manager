@@ -1,11 +1,11 @@
 # Use a lightweight OpenJDK base (use ARM image for Pi)
-FROM eclipse-temurin:17-jdk-jammy
+FROM eclipse-temurin:21-jdk-jammy
 
 # Set the working directory
 WORKDIR /app
 
-# Copy the jar file (assuming you're using Maven or Gradle)
-COPY target/YOUR_JAR_NAME.jar app.jar
+# Copy the jar file 
+COPY target/task-manager-app-1.0-SNAPSHOT.jar app.jar
 
 # Run the application
 CMD ["java", "-jar", "app.jar"]

@@ -1,14 +1,10 @@
 import java.util.Scanner;
 
-public class Main {
+public class MainCLI {
     public static void main(String[] args) {
         Scanner input = new Scanner(System.in);
         Util util = new Util();
         Csv csv = new Csv();
-        Email email = new Email();
-
-        startReminderThread(email);
-        startCleanupThread(csv);
 
         int choice = util.getChoice(input);
         while (choice != 4) {
@@ -24,32 +20,6 @@ public class Main {
         }
         input.close();
     }
-
-    private static void startReminderThread(Email email) {
-        new Thread(() -> {
-            while (true) {
-                try {
-                    email.sendReminderEmails();
-                    Thread.sleep(60000);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }).start();
-    }
-
-    private static void startCleanupThread(Csv csv) {
-    new Thread(() -> {
-        while (true) {
-            try {
-                csv.removePastEvents();
-                Thread.sleep(24 * 60 * 60 * 1000); // sleep 24 hours
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-    }).start();
-}
 
     private static void handleUserChoice(int choice, Scanner input, Csv csv) {
         switch (choice) {
