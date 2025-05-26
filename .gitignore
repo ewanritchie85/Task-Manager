@@ -20,7 +20,9 @@ out/
 *.bak
 *.tmp
 
-events.csv
+/shelf/
+/workspace.xml
+
 
 
 src/main/resources/email.properties

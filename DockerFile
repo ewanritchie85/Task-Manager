@@ -1,0 +1,11 @@
+# Use a lightweight OpenJDK base (use ARM image for Pi)
+FROM eclipse-temurin:17-jdk-jammy
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the jar file (assuming you're using Maven or Gradle)
+COPY target/YOUR_JAR_NAME.jar app.jar
+
+# Run the application
+CMD ["java", "-jar", "app.jar"]
