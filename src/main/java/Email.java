@@ -12,11 +12,19 @@ public class Email {
     Csv csv = new Csv();
 
     public void sendReminderEmails() throws IOException {
+        System.out.println("sendReminderEmails() called");
         List<String[]> events = csv.readFromCSV();
+        System.out.println("Loaded " + events.size() + " events from CSV.");
         LocalDateTime now = util.getLocalDateTime().withSecond(0).withNano(0);
 
         Properties credentials = new Properties();
         InputStream input = getClass().getClassLoader().getResourceAsStream("email.properties");
+        if (input == null) {
+            System.err.println("email.properties NOT FOUND on classpath!");
+            return;
+        } else {
+            System.out.println("email.properties loaded successfully");
+        }
         credentials.load(input);
 
         String recipient = credentials.getProperty("email.recipient");
@@ -24,32 +32,39 @@ public class Email {
         String password = credentials.getProperty("email.password");
 
         for (String[] event : events) {
+    System.out.println("Raw event row: " + java.util.Arrays.toString(event));
+
             if (event[2].equalsIgnoreCase("Reminder Date")) {
-                continue; 
+                continue;
             }
             try {
                 String eventName = event[0];
                 String eventDate = event[1];
                 String reminderDateStr = event[2];
                 LocalDateTime reminderDate = LocalDateTime.parse(reminderDateStr);
+                System.out.println("Now: " + now + " | Reminder: " + reminderDate.withSecond(0).withNano(0));
+                System.out.println("Checking event: " + eventName + ", reminder at: " + reminderDate);
 
-                if (reminderDate.withSecond(0).withNano(0).equals(now)) {
+                if (!reminderDate.isAfter(now) && !reminderDate.isBefore(now.minusMinutes(1))) {
+                    System.out.println("Sending reminder for event: " + eventName + " at " + reminderDate);
                     sendEmail(
-                        recipient,
-                        "Reminder: " + eventName,
-                        "Your event \"" + eventName + "\" is scheduled at " + eventDate,
-                        username,
-                        password
-                    );
+                            recipient,
+                            "Reminder: " + eventName,
+                            "Your event \"" + eventName + "\" is scheduled at " + eventDate,
+                            username,
+                            password);
                 }
             } catch (Exception e) {
                 System.out.println("Error parsing reminder date for event: " + event[0]);
+                e.printStackTrace();
             }
         }
+        System.out.println("Reminder check complete.");
     }
 
     // Email sending method using Jakarta Mail
-    public void sendEmail(String to, String subject, String body, String username, String password) throws MessagingException {
+    public void sendEmail(String to, String subject, String body, String username, String password)
+            throws MessagingException {
         Properties props = new Properties();
         props.put("mail.smtp.auth", "true");
         props.put("mail.smtp.starttls.enable", "true");
@@ -71,5 +86,5 @@ public class Email {
         Transport.send(message);
         System.out.println("Email sent to " + to);
     }
-    
+
 }

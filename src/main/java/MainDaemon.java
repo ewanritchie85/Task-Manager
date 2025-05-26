@@ -5,8 +5,10 @@ public class MainDaemon {
 
         // Start reminder thread
         new Thread(() -> {
+
             while (true) {
                 try {
+                    System.out.println("Checking for reminders...");
                     email.sendReminderEmails();
                     Thread.sleep(60000); // 1 minute
                 } catch (Exception e) {
