@@ -9,19 +9,20 @@ import com.opencsv.CSVWriter;
 
 public class Csv {
     String CSVFile = System.getProperty("user.home") + "/task-manager-data/events.csv";
+    private final java.io.File file;
 
     public Csv() {
-        java.io.File file = new java.io.File(CSVFile);
+        this.file = new java.io.File(CSVFile);
         file.getParentFile().mkdirs();
     }
 
+    private final String[] header = { "Event Name", "Event Date", "Reminder Date" };
+
     public void writeToCSV(Event event, Reminder reminder) {
-        java.io.File file = new java.io.File(CSVFile);
         boolean hasHeader = file.exists() && file.length() > 0;
 
         try (CSVWriter writer = new CSVWriter(new FileWriter(CSVFile, true))) {
             if (!hasHeader) {
-                String[] header = { "Event Name", "Event Date", "Reminder Date" };
                 writer.writeNext(header);
             }
 
@@ -37,7 +38,6 @@ public class Csv {
     }
 
     public List<String[]> readFromCSV() {
-        java.io.File file = new java.io.File(CSVFile);
         if (!file.exists()) {
             return new java.util.ArrayList<>();
         }
@@ -62,7 +62,6 @@ public class Csv {
 
     public void overwriteCSV(List<String[]> events) {
         try (CSVWriter writer = new CSVWriter(new FileWriter(CSVFile))) {
-            String[] header = { "Event Name", "Event Date", "Reminder Date" };
             writer.writeNext(header);
             for (String[] event : events) {
                 writer.writeNext(event);
