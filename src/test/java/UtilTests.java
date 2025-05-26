@@ -18,8 +18,8 @@ public class UtilTests {
 
     @Test
     public void testReadFromCSVReturnsList() {
-        Util util = new Util();
-        List<String[]> events = util.readFromCSV();
+        Csv csv = new Csv();
+        List<String[]> events = csv.readFromCSV();
         assertNotNull(events);
     }
 

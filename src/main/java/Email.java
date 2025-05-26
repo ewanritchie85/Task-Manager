@@ -9,9 +9,10 @@ import java.io.InputStream;
 
 public class Email {
     Util util = new Util();
+    Csv csv = new Csv();
 
     public void sendReminderEmails() throws IOException {
-        List<String[]> events = util.readFromCSV();
+        List<String[]> events = csv.readFromCSV();
         LocalDateTime now = util.getLocalDateTime().withSecond(0).withNano(0);
 
         Properties credentials = new Properties();

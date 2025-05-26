@@ -5,6 +5,7 @@ import java.util.List;
 
 public class Event {
     Util util = new Util();
+    Csv csv = new Csv();
     private String name;
     private LocalDateTime date;
 
@@ -68,7 +69,7 @@ public class Event {
     public void removeEvent(Scanner input) {
         System.out.println("Enter name of event to remove:");
         String eventToRemove = input.nextLine();
-        List<String[]> events = util.readFromCSV();
+        List<String[]> events = csv.readFromCSV();
         List<String[]> updatedEvents = new java.util.ArrayList<>();
 
         for (String[] event : events) {
@@ -86,7 +87,7 @@ public class Event {
             }
         }
 
-        util.overwriteCSV(updatedEvents);
+        csv.overwriteCSV(updatedEvents);
     }
 
 }
