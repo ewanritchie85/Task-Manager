@@ -9,9 +9,13 @@ import java.io.IOException;
 import java.io.FileReader;
 
 public class Util {
-    String CSVFile = "events.csv";
+    String CSVFile = System.getProperty("user.home") + "/task-manager-data/events.csv";
 
     public Util() {
+    }
+
+        public LocalDateTime getLocalDateTime() {
+        return LocalDateTime.now();
     }
 
     public int getChoice(Scanner input) {
@@ -26,8 +30,8 @@ public class Util {
     }
 
     public Boolean chooseAgain(Scanner input) {
-        while (true){
-            try{
+        while (true) {
+            try {
                 System.out.println("Do you want to do anything else? (y/n)");
                 char choice = input.nextLine().charAt(0);
                 if (choice == 'y' || choice == 'Y') {
@@ -35,8 +39,7 @@ public class Util {
                 } else if (choice == 'n' || choice == 'N') {
                     System.out.println("Goodbye...");
                     return false;
-                }
-                else {
+                } else {
                     System.out.println("Invalid input. Please enter 'y' or 'n'.");
                 }
             } catch (Exception e) {
@@ -47,6 +50,7 @@ public class Util {
 
     public void writeToCSV(Event event, Reminder reminder) {
         java.io.File file = new java.io.File(CSVFile);
+        file.getParentFile().mkdirs();
         boolean hasHeader = file.exists() && file.length() > 0;
 
         try (CSVWriter writer = new CSVWriter(new FileWriter(file, true))) {
@@ -67,6 +71,11 @@ public class Util {
     }
 
     public List<String[]> readFromCSV() {
+        java.io.File file = new java.io.File(CSVFile);
+        file.getParentFile().mkdirs();
+        if (!file.exists()) {
+        return new java.util.ArrayList<>();
+        }
         try (CSVReader reader = new CSVReader(new FileReader(CSVFile))) {
             return reader.readAll();
         } catch (IOException e) {
@@ -87,10 +96,11 @@ public class Util {
     }
 
     public void overwriteCSV(List<String[]> events) {
+        java.io.File file = new java.io.File(CSVFile);
+        file.getParentFile().mkdirs();
         try (CSVWriter writer = new CSVWriter(new FileWriter(CSVFile))) {
             String[] header = { "Event Name", "Event Date", "Reminder Date" };
             writer.writeNext(header);
-            // add verification etc.
             for (String[] event : events) {
                 writer.writeNext(event);
             }
@@ -99,10 +109,7 @@ public class Util {
         }
     }
 
-    public LocalDateTime getLocalDateTime(){
-        return LocalDateTime.now();
-    }
+
 
 }
-
     
