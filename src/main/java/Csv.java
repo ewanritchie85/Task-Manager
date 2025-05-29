@@ -1,7 +1,11 @@
-import java.io.FileReader;
-import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.ArrayList;
 
 import java.time.ZoneId;
 import java.time.ZoneOffset;
@@ -12,32 +16,36 @@ import com.opencsv.CSVReader;
 import com.opencsv.CSVWriter;
 
 public class Csv {
-    String CSVFile = "/home/pi/task-manager-data/events.csv";
+    private static final String DEFAULT_CSV_FILE = "/home/pi/task-manager-data/events.csv";
+    private final String CSVFile;
     private final java.io.File file;
+    private final String[] header = { "Event Name", "Event Date", "Reminder Date" };
 
     public Csv() {
+        // Allow override by environment variable
+        String csvPath = System.getenv("EVENTS_CSV");
+        this.CSVFile = (csvPath != null && !csvPath.isEmpty()) ? csvPath : DEFAULT_CSV_FILE;
         this.file = new java.io.File(CSVFile);
         file.getParentFile().mkdirs();
     }
 
-    private final String[] header = { "Event Name", "Event Date", "Reminder Date" };
-
+    /**
+     * Writes a new event+reminder to the CSV, storing all datetimes in UTC.
+     */
     public void writeToCSV(Event event, Reminder reminder) {
         boolean hasHeader = file.exists() && file.length() > 0;
-
-        try (CSVWriter writer = new CSVWriter(new FileWriter(CSVFile, true))) {
+        try (
+            CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(CSVFile, true), StandardCharsets.UTF_8))
+        ) {
             if (!hasHeader) {
                 writer.writeNext(header);
             }
-            // Convert event and reminder LocalDateTime (assumed in system default time
-            // zone) to UTC and write as ISO string
             ZonedDateTime eventUtc = event.getDate().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC);
-            ZonedDateTime reminderUtc = reminder.getReminderDate().atZone(ZoneId.systemDefault())
-                    .withZoneSameInstant(ZoneOffset.UTC);
+            ZonedDateTime reminderUtc = reminder.getReminderDate().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC);
             String[] data = {
-                    event.getName(),
-                    eventUtc.toString(),
-                    reminderUtc.toString()
+                event.getName(),
+                eventUtc.toString(),
+                reminderUtc.toString()
             };
             writer.writeNext(data);
         } catch (IOException e) {
@@ -45,58 +53,73 @@ public class Csv {
         }
     }
 
+    /**
+     * Reads all events from the CSV, trimming all fields for whitespace.
+     */
     public List<String[]> readFromCSV() {
+        List<String[]> rows = new ArrayList<>();
         if (!file.exists()) {
-            return new java.util.ArrayList<>();
+            return rows;
         }
-        try (CSVReader reader = new CSVReader(new FileReader(CSVFile))) {
-            return reader.readAll();
+        try (
+            CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(CSVFile), StandardCharsets.UTF_8))
+        ) {
+            for (String[] row : reader) {
+                for (int i = 0; i < row.length; i++) {
+                    if (row[i] != null) row[i] = row[i].trim();
+                }
+                rows.add(row);
+            }
         } catch (IOException e) {
             System.err.println("Error reading from CSV: " + e.getMessage());
-            return new java.util.ArrayList<>();
         }
+        return rows;
     }
 
+    /**
+     * Pretty-prints all events in the CSV, converting UTC to local time zone for display.
+     */
     public void printFromCSV() {
         List<String[]> events = readFromCSV();
         boolean isHeader = true;
         for (String[] event : events) {
             if (isHeader) {
-                for (String cell : event) {
-                    System.out.print(cell + "\t");
-                }
-                System.out.println();
+                System.out.println(String.join("\t", event));
                 isHeader = false;
                 continue;
             }
-            // Parse event and reminder dates as UTC and convert to system default time zone for display,
-            // fallback to raw string if parsing fails
             String eventName = event[0];
             String eventDateStr = event[1];
             String reminderDateStr = event[2];
-            String displayEventDate;
-            String displayReminderDate;
+            String displayEventDate, displayReminderDate;
             try {
-                displayEventDate = ZonedDateTime.parse(eventDateStr).withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toString();
+                displayEventDate = ZonedDateTime.parse(eventDateStr)
+                    .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toString();
             } catch (Exception e) {
                 System.err.println("Error parsing event date: " + e.getMessage());
                 displayEventDate = eventDateStr;
             }
             try {
-                displayReminderDate = ZonedDateTime.parse(reminderDateStr).withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toString();
+                displayReminderDate = ZonedDateTime.parse(reminderDateStr)
+                    .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toString();
             } catch (Exception e) {
                 System.err.println("Error parsing reminder date: " + e.getMessage());
                 displayReminderDate = reminderDateStr;
             }
-            System.out.print(eventName + "\t" + displayEventDate + "\t" + displayReminderDate + "\t");
-            System.out.println();
+            System.out.println(eventName + "\t" + displayEventDate + "\t" + displayReminderDate);
         }
     }
 
+    /**
+     * Overwrites the CSV with the given list of events (including header).
+     */
     public void overwriteCSV(List<String[]> events) {
-        try (CSVWriter writer = new CSVWriter(new FileWriter(CSVFile))) {
+        try (
+            CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(CSVFile), StandardCharsets.UTF_8))
+        ) {
             writer.writeNext(header);
             for (String[] event : events) {
+                if (event[0].equals("Event Name")) continue;
                 writer.writeNext(event);
             }
         } catch (IOException e) {
@@ -104,22 +127,16 @@ public class Csv {
         }
     }
 
+    /**
+     * Removes events that are in the past (based on UTC), keeping the header.
+     */
     public void removePastEvents() {
         List<String[]> events = readFromCSV();
-        List<String[]> futureEvents = new java.util.ArrayList<>();
-
-        // Keep the header row always
-        if (!events.isEmpty() && events.get(0).length > 0 && events.get(0)[0].equals("Event Name")) {
-            futureEvents.add(events.get(0));
-        }
-
+        List<String[]> futureEvents = new ArrayList<>();
         for (int i = 1; i < events.size(); i++) {
             String[] event = events.get(i);
-            if (event.length < 2) {
-                continue;
-            }
+            if (event.length < 2) continue;
             try {
-                // Parse event date as UTC ZonedDateTime and compare with current UTC time
                 ZonedDateTime eventDateUtc = ZonedDateTime.parse(event[1]);
                 if (eventDateUtc.isAfter(ZonedDateTime.now(ZoneOffset.UTC))) {
                     futureEvents.add(event);

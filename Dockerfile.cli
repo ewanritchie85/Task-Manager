@@ -2,3 +2,5 @@ FROM eclipse-temurin:21-jdk-jammy
 WORKDIR /app
 COPY target/task-manager-app-1.0-SNAPSHOT.jar app.jar
 CMD ["java", "-cp", "app.jar", "MainCLI"]
+ENV LANG=C.UTF-8
+ENV LC_ALL=C.UTF-8
