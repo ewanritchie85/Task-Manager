@@ -46,3 +46,31 @@ jobs:
         file: Dockerfile.daemon
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-daemon:latest
+
+    
+  deploy-to-pi:
+    needs: build-and-push
+    runs-on: self-hosted
+    steps:
+      - name: Pull latest daemon image
+        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-daemon:latest
+    
+      - name: Pull latest CLI image
+        run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-cli:latest
+  
+
+      - name: Stop and remove existing daemon container
+        run: |
+          docker stop taskmanager-daemon || true
+          docker rm taskmanager-daemon || true
+
+      - name: Stop and remove existing CLI container
+        run: |
+          docker stop taskmanager-cli || true
+          docker rm taskmanager-cli || true
+
+      - name: Run latest daemon
+        run: |
+          docker run -d --name taskmanager-daemon \
+            -v /home/pi/task-manager-data:/app/data \
+            ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-daemon:latest
