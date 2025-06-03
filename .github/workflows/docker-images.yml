@@ -54,6 +54,12 @@ jobs:
     needs: build-and-push
     runs-on: self-hosted
     steps:
+
+      - name: Prune old Docker images and cache
+        run: |
+          docker container prune -f
+          docker image prune -af
+          docker builder prune -af
       - name: Pull latest daemon image
         run: docker pull ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-daemon:latest
     
