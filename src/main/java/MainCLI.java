@@ -13,7 +13,6 @@ public class MainCLI {
             if (util.chooseAgain(input)) {
                 choice = util.getChoice(input);
             } else {
-                System.out.println("Goodbye...");
                 break;
             }
         }
