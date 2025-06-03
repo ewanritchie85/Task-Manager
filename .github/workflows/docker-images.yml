@@ -37,6 +37,7 @@ jobs:
         context: .
         file: Dockerfile.cli
         push: true
+        platforms: linux/amd64,linux/arm64 # Adjusts platform for pi compatibility
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-cli:latest
 
     - name: Build and push Daemon image
@@ -45,6 +46,7 @@ jobs:
         context: .
         file: Dockerfile.daemon
         push: true
+        platforms: linux/amd64,linux/arm64
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/taskmanager-daemon:latest
 
     
