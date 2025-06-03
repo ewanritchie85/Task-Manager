@@ -29,7 +29,6 @@ public class Util {
                 if (choice == 'y' || choice == 'Y') {
                     return true;
                 } else if (choice == 'n' || choice == 'N') {
-                    System.out.println("Goodbye...");
                     return false;
                 } else {
                     System.out.println("Invalid input. Please enter 'y' or 'n'.");
