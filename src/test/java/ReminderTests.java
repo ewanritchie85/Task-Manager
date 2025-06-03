@@ -1,4 +1,5 @@
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -10,7 +11,7 @@ public class ReminderTests {
     public void testGetReminderDateReturnsCorrectValue() {
         Reminder reminder = new Reminder();
 
-        LocalDateTime expectedReminder = LocalDateTime.of(2025, 12, 10, 12, 0);
+        ZonedDateTime expectedReminder = ZonedDateTime.of(2025, 12, 10, 12, 0, 0, 0, ZoneId.of("Europe/London"));
 
         try {
             java.lang.reflect.Field reminderField = Reminder.class.getDeclaredField("reminderDate");

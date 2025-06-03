@@ -35,17 +35,17 @@ public class Csv {
     public void writeToCSV(Event event, Reminder reminder) {
         boolean hasHeader = file.exists() && file.length() > 0;
         try (
-            CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(CSVFile, true), StandardCharsets.UTF_8))
-        ) {
+                CSVWriter writer = new CSVWriter(
+                        new OutputStreamWriter(new FileOutputStream(CSVFile, true), StandardCharsets.UTF_8))) {
             if (!hasHeader) {
                 writer.writeNext(header);
             }
-            ZonedDateTime eventUtc = event.getDate().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC);
-            ZonedDateTime reminderUtc = reminder.getReminderDate().atZone(ZoneId.systemDefault()).withZoneSameInstant(ZoneOffset.UTC);
+            ZonedDateTime eventUtc = event.getDateAsUtc();
+            ZonedDateTime reminderUtc = reminder.getReminderDate().withZoneSameInstant(ZoneOffset.UTC);
             String[] data = {
-                event.getName(),
-                eventUtc.toString(),
-                reminderUtc.toString()
+                    event.getName(),
+                    eventUtc.toString(),
+                    reminderUtc.toString()
             };
             writer.writeNext(data);
         } catch (IOException e) {
@@ -62,11 +62,12 @@ public class Csv {
             return rows;
         }
         try (
-            CSVReader reader = new CSVReader(new InputStreamReader(new FileInputStream(CSVFile), StandardCharsets.UTF_8))
-        ) {
+                CSVReader reader = new CSVReader(
+                        new InputStreamReader(new FileInputStream(CSVFile), StandardCharsets.UTF_8))) {
             for (String[] row : reader) {
                 for (int i = 0; i < row.length; i++) {
-                    if (row[i] != null) row[i] = row[i].trim();
+                    if (row[i] != null)
+                        row[i] = row[i].trim();
                 }
                 rows.add(row);
             }
@@ -77,7 +78,8 @@ public class Csv {
     }
 
     /**
-     * Pretty-prints all events in the CSV, converting UTC to local time zone for display.
+     * Pretty-prints all events in the CSV, converting UTC to local time zone for
+     * display.
      */
     public void printFromCSV() {
         List<String[]> events = readFromCSV();
@@ -94,14 +96,14 @@ public class Csv {
             String displayEventDate, displayReminderDate;
             try {
                 displayEventDate = ZonedDateTime.parse(eventDateStr)
-                    .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toString();
+                        .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toString();
             } catch (Exception e) {
                 System.err.println("Error parsing event date: " + e.getMessage());
                 displayEventDate = eventDateStr;
             }
             try {
                 displayReminderDate = ZonedDateTime.parse(reminderDateStr)
-                    .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toString();
+                        .withZoneSameInstant(ZoneId.systemDefault()).toLocalDateTime().toString();
             } catch (Exception e) {
                 System.err.println("Error parsing reminder date: " + e.getMessage());
                 displayReminderDate = reminderDateStr;
@@ -115,11 +117,12 @@ public class Csv {
      */
     public void overwriteCSV(List<String[]> events) {
         try (
-            CSVWriter writer = new CSVWriter(new OutputStreamWriter(new FileOutputStream(CSVFile), StandardCharsets.UTF_8))
-        ) {
+                CSVWriter writer = new CSVWriter(
+                        new OutputStreamWriter(new FileOutputStream(CSVFile), StandardCharsets.UTF_8))) {
             writer.writeNext(header);
             for (String[] event : events) {
-                if (event[0].equals("Event Name")) continue;
+                if (event[0].equals("Event Name"))
+                    continue;
                 writer.writeNext(event);
             }
         } catch (IOException e) {
@@ -135,7 +138,10 @@ public class Csv {
         List<String[]> futureEvents = new ArrayList<>();
         for (int i = 1; i < events.size(); i++) {
             String[] event = events.get(i);
-            if (event.length < 2) continue;
+            if (event[0].equals("Event Name"))
+                continue;
+            if (event.length < 2)
+                continue;
             try {
                 ZonedDateTime eventDateUtc = ZonedDateTime.parse(event[1]);
                 if (eventDateUtc.isAfter(ZonedDateTime.now(ZoneOffset.UTC))) {

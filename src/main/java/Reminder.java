@@ -1,4 +1,6 @@
 import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Scanner;
 
@@ -6,7 +8,7 @@ public class Reminder {
 
     Util util = new Util();
     private LocalDateTime date;
-    private LocalDateTime reminderDate;
+    private ZonedDateTime reminderDate;
 
     public Reminder() {
     }
@@ -26,8 +28,8 @@ public class Reminder {
     }
 
     public void setDate(LocalDateTime date) {
-    this.date = date;
-}
+        this.date = date;
+    }
 
     public void addReminder(Scanner input) {
         while (true) {
@@ -37,7 +39,7 @@ public class Reminder {
                 if (confirmReminder(reminderDateTime, input)) {
                     if (this.date != null && reminderDateTime.isBefore(this.date)
                             && reminderDateTime.isAfter(LocalDateTime.now())) {
-                        this.reminderDate = reminderDateTime;
+                        this.reminderDate = reminderDateTime.atZone(ZoneId.of("Europe/London"));
                         System.out.println("Reminder added");
                         break;
                     } else {
@@ -53,7 +55,7 @@ public class Reminder {
         }
     }
 
-    public LocalDateTime getReminderDate() {
+    public ZonedDateTime getReminderDate() {
         return this.reminderDate;
     }
 }

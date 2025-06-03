@@ -1,5 +1,6 @@
-import java.time.LocalDateTime;
 import java.util.List;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
 
 import jakarta.mail.*;
 import jakarta.mail.internet.*;
@@ -15,8 +16,7 @@ public class Email {
         System.out.println("sendReminderEmails() called");
         List<String[]> events = csv.readFromCSV();
         System.out.println("Loaded " + events.size() + " events from CSV.");
-        LocalDateTime now = util.getLocalDateTime().withSecond(0).withNano(0);
-
+        ZonedDateTime now = ZonedDateTime.now(ZoneOffset.UTC).withSecond(0).withNano(0);
         Properties credentials = new Properties();
         InputStream input = getClass().getClassLoader().getResourceAsStream("email.properties");
         if (input == null) {
@@ -32,7 +32,7 @@ public class Email {
         String password = credentials.getProperty("email.password");
 
         for (String[] event : events) {
-    System.out.println("Raw event row: " + java.util.Arrays.toString(event));
+            System.out.println("Raw event row: " + java.util.Arrays.toString(event));
 
             if (event[2].equalsIgnoreCase("Reminder Date")) {
                 continue;
@@ -41,7 +41,7 @@ public class Email {
                 String eventName = event[0];
                 String eventDate = event[1];
                 String reminderDateStr = event[2];
-                LocalDateTime reminderDate = LocalDateTime.parse(reminderDateStr);
+                ZonedDateTime reminderDate = ZonedDateTime.parse(reminderDateStr);
                 System.out.println("Now: " + now + " | Reminder: " + reminderDate.withSecond(0).withNano(0));
                 System.out.println("Checking event: " + eventName + ", reminder at: " + reminderDate);
 
