@@ -84,7 +84,7 @@ All event data will persist in this directory on the host.
   Follow the on-screen prompts to add, view, and delete events interactively.
 
 - **Daemon:**  
-  Runs in the background, checking for events and reminders automatically.
+  Runs in the background, checking for events and reminders automatically .
 
 ---
 
