@@ -20,10 +20,23 @@ public class Email {
         Properties credentials = new Properties();
         InputStream input = getClass().getClassLoader().getResourceAsStream("email.properties");
         if (input == null) {
-            System.err.println("email.properties NOT FOUND on classpath!");
-            return;
+            // Fallback: try loading from filesystem for Docker mount
+            try {
+                java.io.File file = new java.io.File("/app/email.properties");
+                if (file.exists()) {
+                    input = new java.io.FileInputStream(file);
+                    System.out.println("Loaded email.properties from /app/email.properties");
+                } else {
+                    System.err.println("email.properties NOT FOUND on classpath or /app/email.properties!");
+                    return;
+                }
+            } catch (Exception ex) {
+                System.err.println("Error loading email.properties from /app/email.properties");
+                ex.printStackTrace();
+                return;
+            }
         } else {
-            System.out.println("email.properties loaded successfully");
+            System.out.println("email.properties loaded successfully from classpath");
         }
         credentials.load(input);
 
